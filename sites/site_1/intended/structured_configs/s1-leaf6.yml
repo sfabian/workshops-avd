@@ -19,7 +19,7 @@ local_users:
   arista:
     privilege: 15
     role: network-admin
-    sha512_password: $6$Jv/e76rXMHL43wA9$Qk3aMLe5syCREp6v97NaLHD6mX84YCNNs1ZVLk9NS9m0B4VgOd8d3mSAM/ubNJac1lisnTNe8UoPqznArboxz0
+    sha512_password: $6$W9CQyuS0fGuOu/v9$gpxXQOTdJYriRLYELQJaHtYWvyGJZpfUCnHN3yQ/b3OX4hHr0ESSwxNoN0JPSWCmsIjhmEkMSOTDIbM.Fq7/u0
 vrfs:
   default:
     ip_routing: false
@@ -28,7 +28,7 @@ management_interfaces:
     description: oob_management
     shutdown: false
     vrf: default
-    ip_address: 192.168.0.13/24
+    ip_address: 192.168.0.29/24
     gateway: 192.168.0.1
     type: oob
 management_api_http:
@@ -44,16 +44,19 @@ vlans:
   10:
     tenant: MY_FABRIC
     name: Ten
+  20:
+    tenant: MY_FABRIC
+    name: Twenty
 vlan_interfaces:
   Vlan4094:
     description: MLAG_PEER
     shutdown: false
-    ip_address: 10.1.253.5/31
+    ip_address: 10.1.253.13/31
     no_autostate: true
     mtu: 1500
 port_channel_interfaces:
   Port-Channel1:
-    description: MLAG_PEER_s1-leaf1_Po1
+    description: MLAG_PEER_s1-leaf5_Po1
     type: switched
     shutdown: false
     vlans: 2-4094
@@ -61,36 +64,28 @@ port_channel_interfaces:
     trunk_groups:
     - MLAG
   Port-Channel2:
-    description: SPINES_Po2
+    description: SPINES_Po9
     type: switched
     shutdown: false
     mode: trunk
-    vlans: '10'
+    vlans: 10,20
     mlag: 2
-  Port-Channel4:
-    description: s1-host1
-    type: switched
-    shutdown: false
-    mode: access
-    vlans: '10'
-    spanning_tree_portfast: edge
-    mlag: 4
 ethernet_interfaces:
   Ethernet1:
-    peer: s1-leaf1
+    peer: s1-leaf5
     peer_interface: Ethernet1
     peer_type: mlag_peer
-    description: MLAG_PEER_s1-leaf1_Ethernet1
+    description: MLAG_PEER_s1-leaf5_Ethernet1
     type: switched
     shutdown: false
     channel_group:
       id: 1
       mode: active
   Ethernet6:
-    peer: s1-leaf1
+    peer: s1-leaf5
     peer_interface: Ethernet6
     peer_type: mlag_peer
-    description: MLAG_PEER_s1-leaf1_Ethernet6
+    description: MLAG_PEER_s1-leaf5_Ethernet6
     type: switched
     shutdown: false
     channel_group:
@@ -98,9 +93,9 @@ ethernet_interfaces:
       mode: active
   Ethernet2:
     peer: s1-spine1
-    peer_interface: Ethernet3
+    peer_interface: Ethernet10
     peer_type: l3spine
-    description: S1-SPINE1_Ethernet3
+    description: S1-SPINE1_Ethernet10
     shutdown: false
     type: switched
     channel_group:
@@ -108,31 +103,18 @@ ethernet_interfaces:
       mode: active
   Ethernet3:
     peer: s1-spine2
-    peer_interface: Ethernet3
+    peer_interface: Ethernet10
     peer_type: l3spine
-    description: S1-SPINE2_Ethernet3
+    description: S1-SPINE2_Ethernet10
     shutdown: false
     type: switched
     channel_group:
       id: 2
       mode: active
-  Ethernet4:
-    peer: s1-host1
-    peer_interface: eth2
-    peer_type: server
-    description: s1-host1_eth2
-    type: switched
-    shutdown: false
-    mode: access
-    vlans: '10'
-    spanning_tree_portfast: edge
-    channel_group:
-      id: 4
-      mode: active
 mlag_configuration:
-  domain_id: RACK1
+  domain_id: RACK3
   local_interface: Vlan4094
-  peer_address: 10.1.253.4
+  peer_address: 10.1.253.12
   peer_link: Port-Channel1
   reload_delay_mlag: 300
   reload_delay_non_mlag: 330
